@@ -4,6 +4,55 @@ const router = express.Router()
 const { dataSource } = require('../db/data-source')
 const logger = require('../utils/logger')('Coach')
 
+// 取得教練列表
+router.get('/', async(req, res, next) => {
+    try{
+        const { per, page } = req.query
+
+        if(!isValidString(per)||!isValidString(page)){
+            res.status(400).json({
+                status: "failed",
+                data: "欄位未填寫正確"    
+            })
+            return
+        }
+
+        const perNum = Number(per)
+        const pageNum = Number(page)
+        const data = await dataSource.getRepository('Coach').find({
+            select:[    
+                'id', 
+                'user_id', 
+                'experience_years', 
+                'description', 
+                'profile_image_url',
+                'created_at',
+                'updated_at'
+            ],
+            take: perNum,
+            skip: (perNum-1)*pageNum,
+            relations: ['User'] 
+        })
+
+        if(!data){
+            res.status(400).json({
+                status: "failed",
+                data: "目前沒有教練"   
+            })
+            return
+        }
+
+        res.status(200).json({
+            status: "success",
+            data: data   
+        })
+        return
+    }catch(error){
+        logger.error(error)
+        next(error)        
+    }
+})
+
 // 取得教練詳細資料
 router.get('/:coachId', async (req, res, next) => {
     try{
@@ -56,6 +105,7 @@ router.get('/:coachId', async (req, res, next) => {
         next(error)
     }    
 })
+
 
 
 module.exports = router
