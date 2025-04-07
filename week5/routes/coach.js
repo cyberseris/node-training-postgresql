@@ -4,15 +4,52 @@ const router = express.Router()
 const { dataSource } = require('../db/data-source')
 const logger = require('../utils/logger')('Coach')
 
-router.get('/', async (req, res, next) => {
+// 取得教練詳細資料
+router.get('/:coachId', async (req, res, next) => {
     try{
-      const data = await dataSource.getRepository('Skill').find({
-        select: ['id', 'name']
-      })
-      res.status(200).json({
-        status: "success",
-        data: data       
-      })
+        const { coachId } = req.params
+
+        if(!isValidString(coachId)){
+            res.status(400).json({
+                status: "failed",
+                data: "欄位未填寫正確"      
+            })
+            return
+        }
+
+        const [data] = await dataSource.getRepository('Coach').find({
+            where: {
+                id: coachId
+            },
+            relations: ['User']
+        })
+
+        if(!data){
+            res.status(400).json({
+                status: "failed",
+                data: "找不到該教練"      
+            })
+            return
+        }
+
+        res.status(200).json({
+            status: "success",
+            data: {
+                user: {
+                    name: data.User.name,
+                    role: data.User.role
+                },
+                coach: {
+                    id: data.id,
+                    user_id: data.user_id,
+                    experience_years: data.experience_years,
+                    description: data.description,
+                    profile_image_url: data.profile_image_url,
+                    created_at: data.created_at,
+                    updated_at: data.updated_at
+                }
+            }    
+        })
       return
     }catch(error){
         logger.error(error)
@@ -20,77 +57,5 @@ router.get('/', async (req, res, next) => {
     }    
 })
 
-router.post('/', async (req, res, next) => {
-    try{
-        const { name } = req.body;
-       
-        if(!isValidString(name)){
-            res.status(400).json({
-                status: "failed",
-                data: "欄位未填寫正確"       
-            })
-            return
-        }
-
-        const skillRepo = dataSource.getRepository('Skill')
-        const findSkill = await skillRepo.find({
-          where: {
-            name: name
-          }
-        })
-        
-        if(findSkill.length > 0){
-            res.status(409).json({
-                status: "failed",
-                message: "資料重複"       
-            })
-            return
-        }
-
-        const newSkill = skillRepo.create({
-          name
-        })
-        const result = await skillRepo.save(newSkill)
-
-        res.status(200).json({
-            status: "success",
-            data: result       
-        })
-        return
-    }catch(error){
-        logger.error(error)
-        next(error) 
-    } 
-})
-
-router.delete('/:skillId', async (req, res, next) => {
-    try{
-        console.log("req.params: ", req.params)
-        const { skillId } = req.params 
-        console.log("hihihi")
-        if(!isValidString(skillId)){
-            res.status(400).json({
-                status: "failed",
-                data: "ID 錯誤"       
-            }) 
-        }
-
-        const result = await dataSource.getRepository('Skill').delete(skillId)
-
-        if(result.affected===0){
-            res.status(400).json({
-                status: "failed",
-                data: "ID 錯誤"       
-            }) 
-        }
-
-        res.status(200).json({
-            status: "success"     
-        }) 
-    }catch(error){
-        logger.error(error)
-        next(error)
-    } 
-})
 
 module.exports = router

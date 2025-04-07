@@ -6,8 +6,6 @@ const logger = require('../utils/logger')('User')
 const bcrypt = require('bcrypt')
 const saltRounds = 10
 
-
-
 router.post('/signup', async (req, res, next) => {
     try{
         const { name, email, password } = req.body;
@@ -64,34 +62,5 @@ router.post('/signup', async (req, res, next) => {
         next(error) 
     } 
 })
-
-/* router.delete('/:skillId', async (req, res, next) => {
-    try{
-        console.log("req.params: ", req.params)
-        const { skillId } = req.params 
-        console.log("hihihi")
-        if(!isValidString(skillId)){
-            res.status(400).json({
-                status: "failed",
-                data: "ID 錯誤"       
-            }) 
-        }
-
-        const result = await dataSource.getRepository('Skill').delete(skillId)
-
-        if(result.affected===0){
-            res.status(400).json({
-                status: "failed",
-                data: "ID 錯誤"       
-            }) 
-        }
-
-        res.status(200).json({
-            status: "success"     
-        }) 
-    }catch(error){
-      next(error)
-    } 
-}) */
 
 module.exports = router

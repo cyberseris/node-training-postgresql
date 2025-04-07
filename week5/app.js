@@ -27,9 +27,9 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/api/credit-package', creditPackageRouter)
 app.use('/api/coaches/skill', skillRouter)
+app.use('/api/coaches', coachRouter)
 app.use('/api/users', userRouter)
 app.use('/api/admin', adminRouter)
-
 
 //404
 // eslint-disable-next-line no-unused-vars
