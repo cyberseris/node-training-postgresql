@@ -4,6 +4,7 @@ const { dataSource } = require('../db/data-source')
 const appError = require('../utils/appError')
 const handleErrorAsync = require('../utils/handleErrorAsync')
 const { isValidString, isNumber } = require('../utils/validUtils')
+const isAuth = require('../middlewares/isAuth')
 
 //取得購買方案列表
 router.get('/',  handleErrorAsync(async (req, res, next) => {
@@ -67,5 +68,49 @@ router.delete('/:creditPackageId', handleErrorAsync(async (req, res, next) => {
         status: "success"     
     }) 
 }))
+
+//使用者購買方案
+router.post('/:creditPackageId', isAuth,async (req, res, next) => {
+    try{
+        const { creditPackageId } = req.params
+
+        if(!isValidString(creditPackageId)){
+            next(appError(400, "ID 錯誤"))
+        }
+
+        const creditPackage = dataSource.getRepository('CreditPackage')
+        const findCreditPackage = await creditPackage.findOne({
+            where: {
+                id: creditPackageId
+            }
+        })
+
+        if(!findCreditPackage){
+            next(appError(400, "ID 錯誤"))
+            return
+        }
+        
+        const creditPurchase = dataSource.getRepository('CreditPurchase')
+        const newCreditPurchase = creditPurchase.create({
+            user_id: req.user,
+            credit_package_id: creditPackageId,
+            purchase_credits: findCreditPackage.credit_amount, 
+            price_paid: Number(findCreditPackage.price)
+        })
+
+        const result = await creditPurchase.save(newCreditPurchase)
+
+        if(result.affected===0){
+            next(appError(400, "購買失敗"))
+        }
+
+        res.status(201).json({
+            status: "success"
+        })
+
+    }catch(error){
+        next(error)
+    }
+})
 
 module.exports = router

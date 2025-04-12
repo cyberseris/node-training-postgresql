@@ -22,7 +22,7 @@ router.post('/coaches/courses', isAuth, isCoach, handleErrorAsync(async (req, re
     const userRepo = dataSource.getRepository('User')
     const findUser = await userRepo.findOne({
         where: {
-        id: user_id
+            id: user_id
         }
     })
 
