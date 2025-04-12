@@ -12,9 +12,10 @@ router.get('/',  handleErrorAsync(async (req, res, next) => {
     select: ['id', 'name', 'credit_amount', 'price']
     })
     res.status(200).json({
-    status: "success",
-    data: data       
-    })   
+        status: "success",
+        data: data       
+    })
+    return   
 }))
 
 //新增購買方案
@@ -62,11 +63,13 @@ router.delete('/:creditPackageId', handleErrorAsync(async (req, res, next) => {
 
     if(result.affected===0){
         next(appError(400, "ID 錯誤")) 
+        return
     }
 
     res.status(200).json({
         status: "success"     
     }) 
+    return
 }))
 
 //取得單一使用者購買方案
@@ -129,6 +132,7 @@ router.post('/:creditPackageId', isAuth, handleErrorAsync(async (req, res, next)
     res.status(201).json({
         status: "success"
     })
+    return
 }))
 
 module.exports = router
