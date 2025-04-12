@@ -37,7 +37,7 @@ module.exports = new EntitySchema({
     relations: {
         User: {
             target: 'User',
-            type: 'one-to-one',
+            type: 'many-to-one',
             inverseSide: 'CreditPurchase',
             joinColumn: {
                 name: 'user_id', // CreditPurchase table
@@ -47,7 +47,7 @@ module.exports = new EntitySchema({
         },
         CreditPackage: {
             target: 'CreditPackage',
-            type: 'one-to-one',
+            type: 'many-to-one',
             inverseSide: 'CreditPurchase',
             joinColumn: {
                 name: 'credit_package_id', // CreditPurchase table
