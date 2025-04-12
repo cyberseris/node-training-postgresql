@@ -39,17 +39,17 @@ module.exports = new EntitySchema({
             target: 'User',
             type: 'one-to-one',
             inverseSide: 'CreditPurchase',
-            joinColumns: {
+            joinColumn: {
                 name: 'user_id', // CreditPurchase table
                 referencedColumn: 'id', // User table
-                foreignKeyConstraintName: 'CreditPurchase_user_id_fk'
+                foreignKeyConstraintName: 'creditpurchase_user_id_fk'
             }
         },
         CreditPackage: {
             target: 'CreditPackage',
             type: 'one-to-one',
             inverseSide: 'CreditPurchase',
-            joinColumns: {
+            joinColumn: {
                 name: 'credit_package_id', // CreditPurchase table
                 referencedColumnName: 'id',  // CreditPackage Table
                 foreignKeyConstraintName: 'creditpurchase_creditPackage_id_fk'
