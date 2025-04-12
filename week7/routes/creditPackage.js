@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const handleErrorAsync = require('../utils/handleErrorAsync')
 const isAuth = require('../middlewares/isAuth')
-const creditPackageController = require('../controllers/creditPackageController')
+const creditPackageController = require('../controllers/creditPackage')
 
 //取得購買方案列表
 router.get('/',  handleErrorAsync(creditPackageController.getCreditPackageList))
