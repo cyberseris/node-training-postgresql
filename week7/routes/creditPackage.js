@@ -1,22 +1,22 @@
 const express = require('express')
-
 const router = express.Router()
-const config = require('../config/index')
-const { dataSource } = require('../db/data-source')
-const logger = require('../utils/logger')('CreditPackage')
-const creditPackage = require('../controllers/creditPackage')
-const auth = require('../middlewares/auth')({
-  secret: config.get('secret').jwtSecret,
-  userRepository: dataSource.getRepository('User'),
-  logger
-})
+const handleErrorAsync = require('../utils/handleErrorAsync')
+const isAuth = require('../middlewares/isAuth')
+const creditPackageController = require('../controllers/creditPackageController')
 
-router.get('/', creditPackage.getAll)
+//取得購買方案列表
+router.get('/',  handleErrorAsync(creditPackageController.getCreditPackageList))
 
-router.post('/', creditPackage.post)
+//新增購買方案
+router.post('/', handleErrorAsync(creditPackageController.postCreditPackage))
 
-router.post('/:creditPackageId', auth, creditPackage.postUserBuy)
+//刪除購買方案
+router.delete('/:creditPackageId', handleErrorAsync(creditPackageController.deleteCreditPackage))
 
-router.delete('/:creditPackageId', creditPackage.deletePackage)
+//取得使用者已購買的方案列表
+router.get('/userCreditPackage', isAuth, handleErrorAsync(creditPackageController.getUserCreditPackage))
+
+//使用者購買方案
+router.post('/:creditPackageId', isAuth, handleErrorAsync(creditPackageController.postUserCreditPackage))
 
 module.exports = router

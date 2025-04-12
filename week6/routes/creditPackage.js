@@ -72,7 +72,7 @@ router.delete('/:creditPackageId', handleErrorAsync(async (req, res, next) => {
     return
 }))
 
-//取得單一使用者購買方案
+//取得使用者已購買的方案列表
 router.get('/userCreditPackage', isAuth, handleErrorAsync(async(req, res, next) => {
     const creditPurchase = dataSource.getRepository('CreditPurchase')
     const findUserCreditCreditPurchase = await creditPurchase.find({

@@ -46,7 +46,7 @@ router.post('/:courseId', isAuth, handleErrorAsync(async(req, res, next) => {
   return
 }))
 
-//取得所有報名課程
+//取得已預約的課程列表
 router.get('/', isAuth, handleErrorAsync(async(req, res, next) => {
     const courseRepo = dataSource.getRepository('CourseBooking')
     const courseBookingResult = await courseRepo.find({
