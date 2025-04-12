@@ -64,11 +64,13 @@ router.delete('/:skillId', handleErrorAsync(async (req, res, next) => {
 
     if(result.affected===0){
         next(appError(400, "ID 錯誤"))  
+        return
     }
 
     res.status(200).json({
         status: "success"     
     })  
+    return
 }))
 
 module.exports = router

@@ -134,23 +134,27 @@ router.post('/coaches/:userId', isAuth, handleErrorAsync(async (req, res, next) 
     
     if(!isValidString(userId) || !isValidString(description) || !isNumber(experience_years)){
         next(appError(400, "欄位未填寫正確")) 
+        return
     }
     
     if(profile_image_url && isValidString(profile_image_url) && !profile_image_url.startsWith('https')){
         next(appError(400, "欄位未填寫正確")) 
+        return
     }
 
     const userRepo = dataSource.getRepository('User')
     const findUser = await userRepo.findOne({
         where: {
-        id: userId
+            id: userId
         }
     })
 
     if(!findUser){
         next(appError(400, "使用者不存在")) 
+        return
     }else if(findUser.role === 'COACH'){
-        next(appError(400, "使用者已經是教練"))            
+        next(appError(400, "使用者已經是教練")) 
+        return           
     }
 
     const updateUser = await userRepo.update({
@@ -160,7 +164,8 @@ router.post('/coaches/:userId', isAuth, handleErrorAsync(async (req, res, next) 
     })
 
     if(updateUser.affected === 0){
-        next(appError(400, "更新使用者失敗"))      
+        next(appError(400, "更新使用者失敗"))    
+        return  
     }
 
     const coachRepo = dataSource.getRepository('Coach')
@@ -188,6 +193,7 @@ router.post('/coaches/:userId', isAuth, handleErrorAsync(async (req, res, next) 
             coach: coachResult
         }      
     })
+    return
 }))
 
 module.exports = router
