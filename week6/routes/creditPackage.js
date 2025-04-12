@@ -70,43 +70,27 @@ router.delete('/:creditPackageId', handleErrorAsync(async (req, res, next) => {
 }))
 
 //取得單一使用者購買方案
-router.get('/userCreditPackage', isAuth, async(req, res, next) => {
-    try{
-        console.log("==================取得單一使用者購買方案===================")
-        console.log(req.user)
-        console.log("==================取得單一使用者購買方案===================")
-        const creditPurchase = dataSource.getRepository('CreditPurchase')
-        const findUserCreditCreditPurchase = await creditPurchase.find({
-            select: ['credit_package_id', 'purchase_credits', 'price_paid'],
-            where: {
-                user_id: req.user
-            },
-            relations: ['CreditPackage']
-        })
-        console.log("==================取得單一使用者購買方案===================")
-        console.log(findUserCreditCreditPurchase)
-        console.log("==================取得單一使用者購買方案===================")
-/*         const findUserCreditPackage = creditPackage.find({
-            select: ['credit_package_id', 'purchase_credits', 'price_paid'],
-            where: {
-                user_id: req.user
-            }
-        }) */
+router.get('/userCreditPackage', isAuth, handleErrorAsync(async(req, res, next) => {
+    const creditPurchase = dataSource.getRepository('CreditPurchase')
+    const findUserCreditCreditPurchase = await creditPurchase.find({
+        select: ['id', 'credit_package_id'],
+        where: {
+            user_id: req.user
+        },
+        relations: ['CreditPackage']
+    })
 
-        if(!findUserCreditCreditPurchase){
-            next(appError(400, "目前尚未購買任何方案"))
-            return
-        }
-
-        res.status(200).json({
-            status: "success",
-            data: findUserCreditCreditPurchase
-        })
+    if(!findUserCreditCreditPurchase){
+        next(appError(400, "目前尚未購買任何方案"))
         return
-    }catch(error){
-        next(error)
     }
-})
+
+    res.status(200).json({
+        status: "success",
+        data: findUserCreditCreditPurchase
+    })
+    return
+}))
 
 //使用者購買方案
 router.post('/:creditPackageId', isAuth, handleErrorAsync(async (req, res, next) => {
