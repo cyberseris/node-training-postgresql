@@ -76,7 +76,7 @@ router.delete('/:creditPackageId', handleErrorAsync(async (req, res, next) => {
 router.get('/userCreditPackage', isAuth, handleErrorAsync(async(req, res, next) => {
     const creditPurchase = dataSource.getRepository('CreditPurchase')
     const findUserCreditCreditPurchase = await creditPurchase.find({
-        select: ['id', 'credit_package_id'],
+        select: ['id', 'credit_package_id', 'purchase_credits', 'price_paid', 'created_at'],
         where: {
             user_id: req.user
         },
