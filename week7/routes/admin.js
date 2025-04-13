@@ -5,6 +5,9 @@ const isCoach = require('../middlewares/isCoach')
 const handleErrorAsync = require('../utils/handleErrorAsync')
 const adminController = require('../controllers/admin')
 
+//取得教練自己的課程列表
+router.get('/coaches/courses', isAuth, isCoach, adminController.getCourseList)
+
 // 新增教練課程
 router.post('/coaches/courses', isAuth, isCoach, handleErrorAsync(adminController.postCourse))
 

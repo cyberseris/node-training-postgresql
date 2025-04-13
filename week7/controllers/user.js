@@ -1,6 +1,7 @@
 const { dataSource } = require('../db/data-source')
 const { isValidString, isValidPassword } = require('../utils/validUtils')
 const { generateJWT } = require('../utils/jwtUtils')
+const { IsNull } = require('typeorm')
 const appError = require('../utils/appError')
 const bcrypt = require('bcrypt')
 const saltRounds = 10
@@ -192,7 +193,35 @@ const userController = {
             status : "success"
         })
         return 
-    }
+    },
+    //取得使用者已購買的方案列表
+    async getCreditPackageList (req, res, next) {
+        const data = await dataSource.getRepository('CreditPackage').find({
+            select: ['id', 'name', 'credit_amount', 'price']
+        })
+        res.status(200).json({
+            status: "success",
+            data: data       
+        })
+        return 
+    },
+    //取得已預約的課程列表
+    async getBookingCourse (req, res, next) {
+        const courseRepo = dataSource.getRepository('CourseBooking')
+        const courseBookingResult = await courseRepo.find({
+            select: ['id', 'course_id', 'booking_at', 'status','created_at'],
+            where: {
+                user_id: req.user.id,
+                cancelled_at: IsNull()
+            },
+            relations: ['Course']
+        })
+
+        res.status(200).json({
+            data: courseBookingResult
+        })
+        return
+    },
 }
 
 module.exports = userController;

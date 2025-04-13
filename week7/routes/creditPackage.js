@@ -13,9 +13,6 @@ router.post('/', handleErrorAsync(creditPackageController.postCreditPackage))
 //刪除購買方案
 router.delete('/:creditPackageId', handleErrorAsync(creditPackageController.deleteCreditPackage))
 
-//取得使用者已購買的方案列表
-router.get('/userCreditPackage', isAuth, handleErrorAsync(creditPackageController.getUserCreditPackage))
-
 //使用者購買方案
 router.post('/:creditPackageId', isAuth, handleErrorAsync(creditPackageController.postUserCreditPackage))
 

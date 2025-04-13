@@ -80,6 +80,30 @@ const coachController = {
             }    
         })
         return 
+    },
+    // 取得指定教練課程列表
+    async getSingleCoachCourse (req, res, next) {
+        const { coachId } = req.params
+        if(!isValidString(coachId)){
+            next(appError(400, "欄位未填寫正確"))
+            return
+        }
+
+        const coachRepo = dataSource.getRepository('Course')
+        const findCoachCourse = await coachRepo.find({
+            where: {user_id: coachId}
+        })
+
+        if(!findCoachCourse){
+            next(appError(400, "找不到該教練"))
+            return
+        }
+
+        res.status(200).json({
+            status: "success",
+            data: findCoachCourse
+        })
+        return
     }
 }
 

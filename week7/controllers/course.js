@@ -1,26 +1,8 @@
 const { dataSource } = require('../db/data-source')
 const appError = require('../utils/appError')
 const { isValidString } = require('../utils/validUtils')
-const { IsNull } = require('typeorm')
 
 const courseController = {
-    //取得已預約的課程列表
-    async getBookingCourse (req, res, next) {
-        const courseRepo = dataSource.getRepository('CourseBooking')
-        const courseBookingResult = await courseRepo.find({
-            select: ['id', 'course_id', 'booking_at', 'status','created_at'],
-            where: {
-                user_id: req.user.id,
-                cancelled_at: IsNull()
-            },
-            relations: ['Course']
-        })
-
-        res.status(200).json({
-            data: courseBookingResult
-        })
-        return
-    },
     //報名課程 
     async postBookingCourse (req, res, next) {
         const { courseId } = req.params

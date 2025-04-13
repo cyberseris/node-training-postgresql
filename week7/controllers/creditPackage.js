@@ -67,28 +67,6 @@ const creditPackageController = {
         }) 
         return       
     },
-    //取得使用者已購買的方案列表
-    async getUserCreditPackage (req, res, next) {
-        const creditPurchase = dataSource.getRepository('CreditPurchase')
-        const findUserCreditCreditPurchase = await creditPurchase.find({
-            select: ['id', 'credit_package_id', 'purchase_credits', 'price_paid', 'created_at'],
-            where: {
-                user_id: req.user.id
-            },
-            relations: ['CreditPackage']
-        })
-
-        if(!findUserCreditCreditPurchase){
-            next(appError(400, "目前尚未購買任何方案"))
-            return
-        }
-
-        res.status(200).json({
-            status: "success",
-            data: findUserCreditCreditPurchase
-        })
-        return        
-    },
     //使用者購買方案    
     async postUserCreditPackage (req, res, next) {
         const { creditPackageId } = req.params

@@ -1,4 +1,4 @@
-const { EntitySchema } = require('typeorm')
+const { EntitySchema, JoinColumn } = require('typeorm')
 
 module.exports = new EntitySchema({
     name: 'Course',
@@ -8,7 +8,7 @@ module.exports = new EntitySchema({
             primary: true,
             type: 'uuid',
             generated: 'uuid',
-            nullable: false
+            nullable: false,
         },
         user_id: {
             type: 'uuid',
@@ -66,6 +66,17 @@ module.exports = new EntitySchema({
             createDate: true,
             nullable: false
         },
+    },
+    relations: {
+        CourseBooking: {
+            target: 'CourseBooking',
+            type: 'one-to-many',
+            inverseSide: 'Course',
+            joinColumn: {
+                name: 'id',
+                referencedColumn: 'course_id',
+                foreignKeyConstraintName: 'course_coursebooking_course_id_fk'
+            }
+        }
     }
-
 })

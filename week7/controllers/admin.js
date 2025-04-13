@@ -189,6 +189,46 @@ const adminController = {
         })
         return
     },
+    //取得教練自己的課程列表
+    async getCourseList (req, res, next) {
+        const coachId = req.user.id
+
+        if(!isValidString(coachId)){
+            next(appError(400, "欄位未填寫正確"))
+            return
+        }
+
+        const courseRepo = dataSource.getRepository('Course')
+        const findCourseList = await courseRepo.createQueryBuilder('course')
+            .select([
+                'course.id AS id',
+                'course.name AS name',
+                'course.start_at AS start_at',
+                'course.end_at AS end_at',
+                'course.max_participants AS max_participants',
+                `CASE 
+                    WHEN course.start_at > NOW() THEN '開放報名中'
+                    WHEN course.end_at < NOW() THEN '報名已結束'
+                    ELSE '未開放報名'
+                END AS status
+                `
+            ])
+            .leftJoin('course.CourseBooking', 'booking')
+            .addSelect('COUNT(booking.id)', 'participants')
+            .where('course.user_id=:coachId', { coachId })
+            .groupBy('course.id')
+            .getRawMany();
+
+        if(!findCourseList){
+            next(appError(400, "找不到教練"))
+            return
+        }
+
+        res.status(200).json({
+            status: "success",
+            data: findCourseList
+        })
+    }
 }
 
 module.exports = adminController;
