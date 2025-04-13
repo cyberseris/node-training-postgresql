@@ -201,7 +201,7 @@ const adminController = {
 
         const courseRepo = dataSource.getRepository('Course')
         const findCourseDetail = await courseRepo.createQueryBuilder('course')
-        .leftJoinAndSelect('course.Skill', 'skill')  // Join the Skill relation
+        .leftJoinAndSelect('course.Skill', 'skill')  
         .select([
             'course.id', 
             'course.name', 
@@ -209,7 +209,7 @@ const adminController = {
             'course.start_at', 
             'course.end_at', 
             'course.max_participants',
-            'skill.name'   // Only select the 'name' from the Skill table
+            'skill.name'   
         ])
         .where('course.id = :courseId AND course.user_id = :coachId', { courseId, coachId })
         .getOne()
