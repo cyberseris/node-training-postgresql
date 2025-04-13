@@ -17,7 +17,14 @@ router.post('/coaches/courses', isAuth, isCoach, handleErrorAsync(adminControlle
 // 修改教練課程 
 router.put('/coaches/courses/:courseId', isAuth, isCoach, handleErrorAsync(adminController.putCourse))
 
-//變更使用者身分為教練
+// 變更使用者身分為教練
 router.post('/coaches/:userId', isAuth, handleErrorAsync(adminController.postUserToCoach))
+
+// 取得教練自己的詳細資料
+router.get('/coaches', isAuth, isCoach, handleErrorAsync(adminController.getCoach))
+
+// 變更教練資料 
+router.put('/coaches', isAuth, isCoach, handleErrorAsync(adminController.putCoach))
+
 
 module.exports = router

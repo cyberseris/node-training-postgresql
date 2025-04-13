@@ -268,6 +268,61 @@ const adminController = {
             data: findCourseList
         })
     },
+    // 取得教練自己的詳細資料
+    async getCoach (req, res, next) {
+        const coachId = req.user.id
+
+        const coachRepo = dataSource.getRepository('Coach')
+        const findCoach = await coachRepo.findOne({
+            where: {user_id: coachId},
+            relations: ['User']
+        })
+
+        if(!findCoach){
+            next(appError(400, "找不到教練"))
+            return
+        }
+
+        res.status(200).json({
+            status:"success",
+            data: {
+               id: findCoach.id,
+               experience_years: findCoach.experience_years,
+               description: findCoach.description,
+               profile_image_url: findCoach.profile_image_url
+            }
+        })
+        return
+    },
+    // 變更教練資料 
+    async putCoach (req, res, next) {
+        const coachId = req.user.id
+        const { experience_years, description, profile_image_url } = req.body
+
+        if(!isNumber(experience_years) || !isValidString(description) || !isValidString(profile_image_url)){
+            next(appError(400, "欄位未填寫正確"))
+            return
+        }
+
+        const coachRepo = dataSource.getRepository('Coach')
+        const updateCoach = await coachRepo.update({
+            user_id: coachId
+        },{
+            experience_years: experience_years, 
+            description: description, 
+            profile_image_url: profile_image_url
+        })
+
+        if(updateCoach.affected === 0){
+            next(appError(400, "找不到教練"))
+            return
+        }
+
+        res.status(200).json({
+            status:"success"
+        })
+        return
+    }
 }
 
 module.exports = adminController;
