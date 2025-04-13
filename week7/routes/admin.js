@@ -8,9 +8,9 @@ const adminController = require('../controllers/admin')
 // 取得教練自己的課程詳細資料
 router.get('/coaches/courses/:courseId', isAuth, isCoach, adminController.getCourseDetail)
 
-/* // 取得教練自己的課程列表
+// 取得教練自己的課程列表
 router.get('/coaches/courses', isAuth, isCoach, adminController.getCourseList)
- */
+
 // 新增教練課程
 router.post('/coaches/courses', isAuth, isCoach, handleErrorAsync(adminController.postCourse))
 
