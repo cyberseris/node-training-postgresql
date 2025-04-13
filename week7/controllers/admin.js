@@ -121,7 +121,7 @@ const adminController = {
         })
         return
     },
-    //變更使用者身分為教練
+    // 變更使用者身分為教練
     async postUserToCoach (req, res, next) {
         const { userId } = req.params
         const { experience_years, description, profile_image_url } = req.body
@@ -189,15 +189,54 @@ const adminController = {
         })
         return
     },
-    //取得教練自己的課程列表
-    async getCourseList (req, res, next) {
+    // 取得教練自己的課程詳細資料
+    async getCourseDetail (req, res, next) {
         const coachId = req.user.id
+        const { courseId } = req.params
 
-        if(!isValidString(coachId)){
+        if(!isValidString(courseId)){
             next(appError(400, "欄位未填寫正確"))
             return
         }
 
+        const courseRepo = dataSource.getRepository('Course')
+        const findCourseDetail = await courseRepo.createQueryBuilder('course')
+        .leftJoinAndSelect('course.Skill', 'skill')  // Join the Skill relation
+        .select([
+            'course.id', 
+            'course.name', 
+            'course.description', 
+            'course.start_at', 
+            'course.end_at', 
+            'course.max_participants',
+            'skill.name'   // Only select the 'name' from the Skill table
+        ])
+        .where('course.id = :courseId AND course.user_id = :coachId', { courseId, coachId })
+        .getOne()
+ 
+
+        if(!findCourseDetail){
+            next(appError(400, "找不到教練"))
+            return
+        }
+
+        res.status(200).json({
+            status: "success",
+            data: {
+                    id: findCourseDetail.id,
+                    name: findCourseDetail.name,
+                    description: findCourseDetail.description,
+                    start_at: findCourseDetail.start_at,
+                    end_at: findCourseDetail.end_at,
+                    max_participants: findCourseDetail.max_participants,
+                    skill_name: findCourseDetail.Skill.name
+            }
+        })
+        return
+    },
+    // 取得教練自己的課程列表
+    async getCourseList (req, res, next) {
+        const coachId = req.user.id
         const courseRepo = dataSource.getRepository('Course')
         const findCourseList = await courseRepo.createQueryBuilder('course')
             .select([
@@ -228,7 +267,7 @@ const adminController = {
             status: "success",
             data: findCourseList
         })
-    }
+    },
 }
 
 module.exports = adminController;

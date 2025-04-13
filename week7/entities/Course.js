@@ -22,13 +22,7 @@ module.exports = new EntitySchema({
         },
         skill_id: {
             type: 'uuid',
-            nullable: false,
-            foreignKey: {
-                name: 'course_skill_id_fk',
-                columnNames: ['skill_id'],  //table COURSE
-                referenceTableName: 'SKILL',
-                referenceColumnName: ['id'] //table SKILL
-            }
+            nullable: false
         },
         name: {
             type: 'varchar',
@@ -70,12 +64,22 @@ module.exports = new EntitySchema({
     relations: {
         CourseBooking: {
             target: 'CourseBooking',
-            type: 'one-to-many',
+            type: 'one-to-many', //one: course, many: CourseBooking
             inverseSide: 'Course',
             joinColumn: {
-                name: 'id',
-                referencedColumn: 'course_id',
+                name: 'id',  // Course table id
+                referencedColumn: 'course_id', // CourseBooking course_id 
                 foreignKeyConstraintName: 'course_coursebooking_course_id_fk'
+            }
+        },
+        Skill: {
+            target: 'Skill',
+            type: 'many-to-one',  // many: course, one: skill
+            inverseSide: 'Course',
+            joinColumn: {
+                name: 'skill_id',  // Course table skill_id
+                referencedColumn: 'id', //Course table id
+                foreignKeyConstraintName: 'course_skill_id_fk'
             }
         }
     }
